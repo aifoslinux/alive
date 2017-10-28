@@ -1,0 +1,56 @@
+## Installation ##
+
+  Partition the disk by using fdisk, gdisk etc.
+    fdisk /dev/sdX
+
+  Mount the partition:
+    mount /dev/sdXX /mnt
+
+  Mount the LiveCD:
+    mount -o loop /dev/disk/by-label/aifos_20* /livecd
+
+  Method 1: Extract the RootFS:
+    unsquashfs -f -d /mnt /livecd/LiveOS/rootfs.sfs
+
+  Method 2: Mount/copy the RootFS:
+    mount -o loop /livecd/LiveOS/rootfs.sfs /rootfs
+    cp -a /rootfs/* /mnt/
+
+  Setup the grub bootloader:
+    grub-install --target=i386-pc --boot-directory=/mnt/boot /dev/sdX
+
+  Copy resolv.conf to /mnt directory:
+    cp /etc/resolv.conf /mnt/etc
+
+## Configuration ##
+
+  Change root to /mnt directory:
+    enter-chroot /mnt
+
+  Set the root password:
+    passwd
+
+  Add a user:
+    useradd -m -G users,audio,video,wheel <username>
+    passwd <username>
+
+  Set the hostname:
+    echo "<hostname>" > /etc/hostname
+
+  Set the keymap:
+    nano /etc/finit.d/keymap.conf
+
+  Set the locale:
+    nano /etc/locale.conf
+
+  Set the time zone:
+    ln -s /usr/share/zoneinfo/<zone>/<subzone> /etc/localtime
+
+  Generate the grub configuration:
+    grub-mkconfig -o /boot/grub/grub.cfg
+
+## Cleaning up ##
+
+  Remove motd and install.txt:
+    rm /etc/motd && touch /etc/motd
+    rm /root/install.txt
